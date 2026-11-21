@@ -1,0 +1,12 @@
+{
+  "name": "grd-pharmaceuticals-suite",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev:website": "npm --prefix website run dev",
+    "dev:portal": "npm --prefix portal run dev",
+    "build:website": "npm --prefix website run build",
+    "build:portal": "npm --prefix portal run build",
+    "build": "npm --prefix website run build && npm --prefix portal run build"
+  }
+}

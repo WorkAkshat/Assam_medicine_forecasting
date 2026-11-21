@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  
+  /* Primary Deep Navy Blue Brand Identity */
+  --color-navy-950: #050E1C;
+  --color-navy-900: #0A192F;
+  --color-navy-850: #0E2340;
+  --color-navy-800: #122B4E;
+  --color-navy-700: #1A3D6D;
+  --color-navy-600: #23528F;
+  --color-navy-500: #2E6BB3;
+  --color-navy-100: #DFEAF5;
+  --color-navy-50: #F0F5FA;
+  
+  /* Backward-compatible aliases for theme tokens */
+  --color-forest-950: #050E1C;
+  --color-forest-900: #0A192F;
+  --color-forest-800: #122B4E;
+  --color-forest-700: #1A3D6D;
+
+  /* Accent: Terracotta Orange */
+  --color-terracotta-500: #C85A2E;
+  --color-terracotta-600: #B5481F;
+
+  /* Clean Backgrounds: Warm White & Soft Ivory */
+  --color-cream-50: #FAFBFD;
+  --color-cream-100: #F4F6F9;
+  --color-sage-50: #F1F6FA;
+  --color-sage-100: #E4EDF5;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+  
+  body {
+    background-color: var(--color-cream-50);
+    color: #0F172A; /* Slate 900 for pristine, high-contrast readability */
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
+  }
+
+  img, video, iframe, embed, object {
+    max-width: 100%;
+    height: auto;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    letter-spacing: -0.015em;
+  }
+
+  /* Custom subtle scrollbar in cool slate tones */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F0F5FA;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #94A3B8;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #64748B;
+  }
+}
+
+@layer components {
+  /* Unified responsive container across all pages and sections */
+  .site-container {
+    width: 100%;
+    max-width: 1560px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .site-container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .site-container {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+  }
+  @media (min-width: 1536px) {
+    .site-container {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  /* Standard section vertical rhythm matching clean, compact reference spacing */
+  .section-spacing {
+    padding-top: 2.25rem;
+    padding-bottom: 2.25rem;
+  }
+  @media (min-width: 640px) {
+    .section-spacing {
+      padding-top: 2.75rem;
+      padding-bottom: 2.75rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .section-spacing {
+      padding-top: 3.25rem;
+      padding-bottom: 3.25rem;
+    }
+  }
+}
+
+/* Custom smooth transitions and animations */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Card hover glow */
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+.card-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: 0.75s;
+}
+.card-shine:hover::after {
+  left: 150%;
+}

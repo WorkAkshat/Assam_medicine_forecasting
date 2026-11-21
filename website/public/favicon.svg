@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <rect width="48" height="48" rx="10" fill="#0E291A"/>
+  <text x="8" y="30" font-family="'Playfair Display', serif" font-weight="800" font-size="19" fill="#FFFFFF" letter-spacing="-0.5">GRD</text>
+  <path d="M 8 36 Q 24 41 40 35" stroke="#C85A2E" stroke-width="2.8" stroke-linecap="round"/>
+</svg>
