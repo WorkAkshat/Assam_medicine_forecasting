@@ -1,0 +1,9 @@
+{
+  "name": "GRD Supply Planner",
+  "short_name": "GRD Planner",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#EEF3F2",
+  "theme_color": "#0E2530",
+  "icons": [{ "src": "/logo.png", "sizes": "512x512", "type": "image/png" }]
+}

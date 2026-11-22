@@ -1,6 +1,6 @@
-// Orchestrates one full engine run: generate → backtest → forecast → simulate pilot → recommend.
-import { SKUS, LOCATIONS, HUB, HISTORY_WEEKS, HORIZON, SIGNALS, SIGNAL_LABELS, weekDate } from './catalog.js';
-import { generateWorld } from './generate.js';
+// Orchestrates one engine run: load data → back-test → forecast → measure outcomes → recommend.
+import { SKUS, LOCATIONS, HUB, HISTORY_WEEKS, HORIZON, SIGNALS, SIGNAL_LABELS, SEGMENTS, weekDate } from './catalog.js';
+import { generateWorld, weekIndexOf } from './generate.js';
 import { MODELS, manualForecast, snaiveForecast, sesForecast, crostonForecast, fitSignalModel, signalForecast } from './models.js';
 import { computePolicy, stockoutProbability, roundPack, expiryAtRisk, planRedistribution, haversineKm, leadTime } from './policy.js';
 import { initialState, prepareAi, runPolicy, summarise, SIM_WEEKS } from './simulate.js';
@@ -123,13 +123,22 @@ function explain(drivers, pol, loc, sku) {
 
 let cache = null;
 
-export function runEngine(scenario) {
+export function runEngine(scenario, uploads = null) {
   const t0 = performance.now();
-  const world = generateWorld(scenario);
+  const world = generateWorld(scenario, uploads);
+  const stockByKey = new Map();
+  (uploads?.stock || []).forEach((r) => {
+    const exp = weekIndexOf(r.expiry);
+    const q = Number(r.qty);
+    if (exp == null || !Number.isFinite(q) || q <= 0) return;
+    const k = `${r.sku}@${r.depot}`;
+    if (!stockByKey.has(k)) stockByKey.set(k, []);
+    stockByKey.get(k).push({ q, exp, batch: r.batch || '' });
+  });
   const bt = backtest(world);
   const n = HISTORY_WEEKS;
 
-  // Pilot simulation: manual habits vs AI policy from identical starting stock.
+  // Outcome measurement: current ordering practice vs the recommended policy, same stock and demand.
   const start = initialState(world);
   const prep = prepareAi(world);
   const manualRun = runPolicy(world, 'manual', prep, start);
@@ -142,7 +151,9 @@ export function runEngine(scenario) {
     const fc = forecastAll(world, s, n, HORIZON, true);
     const b = bt.perSeries[idx];
     const ens = blend(fc, b.weights, HORIZON);
-    const st = manualRun.state[idx];
+    const simState = manualRun.state[idx];
+    const uploadedStock = stockByKey.get(s.key);
+    const st = uploadedStock ? { batches: uploadedStock.map((b) => ({ ...b })), pipe: [] } : simState;
     const onHand = st.batches.reduce((a, x) => a + x.q, 0);
     const inbound = st.pipe.reduce((a, x) => a + x.q, 0);
     const floodNext = world.signals[s.li].expected.flood[n] || 0;
@@ -185,6 +196,14 @@ export function runEngine(scenario) {
       wape,
       wapeManual: b.act ? b.err.manual / b.act : 0,
       next4: ens.slice(0, 4).reduce((a, v) => a + v, 0),
+      last4: s.y[n - 1] + s.y[n - 2] + s.y[n - 3] + s.y[n - 4],
+      segMix: SEGMENTS.map((g) => {
+        let v = 0;
+        for (let k = 1; k <= 13; k += 1) v += s.seg[g.id][n - k];
+        return v;
+      }),
+      source: uploadedStock ? (s.source === 'synthetic' ? 'stock-uploaded' : 'uploaded') : s.source,
+      sigma: b.sigma,
       drivers: (fc.drivers || []).slice(0, 4),
       reason: explain(fc.drivers, pol, s.loc, s.sku),
       _ens: ens,
@@ -267,6 +286,68 @@ export function runEngine(scenario) {
     service: { baseline: base.fillRate, ai: ai.fillRate, gain: ai.fillRate - base.fillRate, target: 0.1 },
   };
 
+  // Network demand value: history and forecast with an aggregated likely range
+  const trend = [];
+  for (let w = n - 78; w < n; w += 1) {
+    let v = 0;
+    const segV = {};
+    SEGMENTS.forEach((g) => (segV[g.id] = 0));
+    world.series.forEach((s) => {
+      v += s.y[w] * s.sku.price;
+      SEGMENTS.forEach((g) => (segV[g.id] += s.seg[g.id][w] * s.sku.price));
+    });
+    trend.push({ date: weekDate(w).toISOString(), actual: v, ...segV });
+  }
+  for (let h = 0; h < HORIZON; h += 1) {
+    let v = 0;
+    let varSum = 0;
+    live.forEach((r) => {
+      const price = SKUS[world.series[r.idx].si].price;
+      v += r._ens[h] * price;
+      varSum += (r.sigma * Math.sqrt(1 + 0.08 * h) * price) ** 2;
+    });
+    const sd = Math.sqrt(varSum);
+    trend.push({ date: weekDate(n + h).toISOString(), forecast: v, band: [Math.max(0, v - 1.2816 * sd), v + 1.2816 * sd] });
+  }
+
+  // Alerts: what a planner should act on today
+  const alerts = [];
+  const locName = Object.fromEntries(LOCATIONS.map((l) => [l.id, l.name]));
+  const skuOf = Object.fromEntries(SKUS.map((k) => [k.id, k]));
+  live.forEach((r) => {
+    const sku = skuOf[r.sku];
+    const days = Math.max(0, Math.round(r.coverWeeks * 7));
+    if (r.status === 'critical') {
+      alerts.push({ id: `so-${r.key}`, type: 'stockout', severity: sku.ved === 'V' ? 'high' : 'medium', key: r.key, sku: r.sku, loc: r.loc,
+        title: `${sku.name} at ${locName[r.loc]} may run out ${days <= 1 ? 'within a day' : `in about ${days} days`}`,
+        detail: `${Math.round(r.pStockout * 100)}% chance of a stock-out before the next delivery (${r.leadWeeks.toFixed(1)} wk lead time). Suggested order ${Math.round(r.order)} ${sku.unit}s.`, value: r.orderValue });
+    }
+    if (r.atRiskValue > 3000) {
+      alerts.push({ id: `ex-${r.key}`, type: 'expiry', severity: r.nearestExpiry != null && r.nearestExpiry <= 8 ? 'high' : 'medium', key: r.key, sku: r.sku, loc: r.loc,
+        title: `${sku.name} at ${locName[r.loc]}: stock worth ₹${Math.round(r.atRiskValue / 1000)}k will expire unsold`,
+        detail: `Nearest batch expires in ${r.nearestExpiry} weeks. Move it to a depot that will sell it in time, or run a scheme.`, value: r.atRiskValue });
+    }
+    if (r.last4 > 20 && r.next4 / r.last4 > 1.35) {
+      alerts.push({ id: `up-${r.key}`, type: 'surge', severity: 'medium', key: r.key, sku: r.sku, loc: r.loc,
+        title: `Demand for ${sku.name} at ${locName[r.loc]} expected to rise ${Math.round((r.next4 / r.last4 - 1) * 100)}%`,
+        detail: `Next 4 weeks ${Math.round(r.next4)} vs ${Math.round(r.last4)} in the last 4. Driver: ${(r.drivers[0] && (SIGNAL_LABELS[r.drivers[0].id] || r.drivers[0].id)) || 'trend'}.`, value: (r.next4 - r.last4) * sku.price });
+    }
+    if (r.excessValue > 20000) {
+      alerts.push({ id: `xs-${r.key}`, type: 'excess', severity: 'low', key: r.key, sku: r.sku, loc: r.loc,
+        title: `${sku.name} at ${locName[r.loc]} holds ${Math.round(r.coverWeeks)} weeks of stock`,
+        detail: `₹${Math.round(r.excessValue / 1000)}k above 12 weeks of need is tying up working capital.`, value: r.excessValue });
+    }
+  });
+  LOCATIONS.forEach((loc, li) => {
+    const lt = leadTime(loc, scenario, world.signals[li].expected.flood[n] || 0);
+    if (lt.sdDays / Math.max(1, lt.days) > 0.38) {
+      alerts.push({ id: `lt-${loc.id}`, type: 'transport', severity: 'low', loc: loc.id,
+        title: `Unreliable deliveries to ${loc.name}`, detail: `Lead time ${lt.days.toFixed(1)} ± ${lt.sdDays.toFixed(1)} days on ${loc.route}. Safety stock there is sized up to cover it.`, value: 0 });
+    }
+  });
+  const sevRank = { high: 0, medium: 1, low: 2 };
+  alerts.sort((a, b) => sevRank[a.severity] - sevRank[b.severity] || b.value - a.value);
+
   const publicRows = live.map(({ _ens, _fc, _pol, _batches, _pipe, ...r }) => r);
   cache = { world, bt, live, scenario };
 
@@ -286,6 +367,10 @@ export function runEngine(scenario) {
     rows: publicRows,
     transfers: transfers.slice(0, 40),
     outlook,
+    trend,
+    alerts,
+    segments: SEGMENTS,
+    dataQuality: world.quality,
     totals: {
       series: live.length,
       stockValue: live.reduce((a, r) => a + r.stockValue, 0),
@@ -310,7 +395,11 @@ export function seriesDetail(key) {
   const n = HISTORY_WEEKS;
   const from = n - 78;
   const history = [];
-  for (let w = from; w < n; w += 1) history.push({ w, date: weekDate(w).toISOString(), actual: s.y[w] });
+  for (let w = from; w < n; w += 1) {
+    const row = { w, date: weekDate(w).toISOString(), actual: s.y[w] };
+    SEGMENTS.forEach((g) => (row[g.id] = s.seg[g.id][w]));
+    history.push(row);
+  }
   const forecast = [];
   for (let h = 0; h < HORIZON; h += 1) {
     const sd = b.sigma * Math.sqrt(1 + 0.08 * h);

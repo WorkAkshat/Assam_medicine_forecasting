@@ -196,7 +196,7 @@ function Depot({ loc, selected, hovered, onHover, onSelect, maxValue, motion }) 
         <ringGeometry args={[0.24, 0.29, 40]} />
         <meshBasicMaterial color={color} transparent opacity={0} depthWrite={false} />
       </mesh>
-      <Html position={[base.x, base.y + height + 0.32, base.z]} center distanceFactor={19} zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
+      <Html position={[base.x, base.y + height + 0.32, base.z]} center distanceFactor={16} zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
         <div className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-medium transition-colors ${active ? 'bg-white text-ink-950' : 'bg-ink-950/70 text-white/85'}`}>
           {loc.name}
         </div>
@@ -217,7 +217,7 @@ function Hub() {
         <cylinderGeometry args={[0.24, 0.3, 0.8, 6]} />
         <meshStandardMaterial color="#d29c36" emissive="#c08427" emissiveIntensity={0.55} roughness={0.3} metalness={0.4} />
       </mesh>
-      <Html position={[0, 1.15, 0]} center distanceFactor={19} style={{ pointerEvents: 'none' }}>
+      <Html position={[0, 1.15, 0]} center distanceFactor={16} style={{ pointerEvents: 'none' }}>
         <div className="whitespace-nowrap rounded bg-muga-400 px-1.5 py-0.5 text-[11px] font-semibold text-ink-950">Rani hub</div>
       </Html>
     </group>

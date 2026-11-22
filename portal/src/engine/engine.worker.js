@@ -2,19 +2,22 @@
 import { runEngine, seriesDetail } from './engine.js';
 
 let lastScenario = null;
+let lastUploads = null;
 
 self.onmessage = (e) => {
   const { id, type, payload } = e.data;
   try {
     let result = null;
     if (type === 'run') {
-      result = runEngine(payload);
-      lastScenario = JSON.stringify(payload);
+      result = runEngine(payload.scenario, payload.uploads);
+      lastScenario = JSON.stringify(payload.scenario) + (payload.uploadsVersion || '');
+      lastUploads = payload.uploads;
     } else if (type === 'series') {
       // The page may have painted from a cached result; rebuild the engine state on demand.
-      if (JSON.stringify(payload.scenario) !== lastScenario) {
-        runEngine(payload.scenario);
-        lastScenario = JSON.stringify(payload.scenario);
+      const sig = JSON.stringify(payload.scenario) + (payload.uploadsVersion || '');
+      if (sig !== lastScenario) {
+        runEngine(payload.scenario, payload.uploads ?? lastUploads);
+        lastScenario = sig;
       }
       result = seriesDetail(payload.key);
     }

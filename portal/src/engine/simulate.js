@@ -1,6 +1,6 @@
-// Pilot simulator: replays the most recent weeks of demand twice — once with today's manual
-// ordering habits and once with the AI policy — from the same starting stock, the same demand
-// and the same lead-time shocks. The difference is what the pilot KPIs measure.
+// Outcome back-test: replays the most recent weeks of demand twice — once with current manual
+// ordering practice and once with the recommended policy — from the same starting stock, demand
+// and lead-time shocks. The difference is what the five outcome KPIs measure.
 import { SKUS, LOCATIONS, HISTORY_WEEKS } from './catalog.js';
 import { rngFor, normal } from './rng.js';
 import { fitSignalModel, withLevelAt, signalForecast, sesForecast, modelSigma } from './models.js';

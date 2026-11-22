@@ -1,7 +1,7 @@
 // Synthetic Northeast India demand + signal generator.
 // Encodes monsoon, Brahmaputra floods, vector-borne disease seasons, winter respiratory illness,
 // national deworming days and festival effects, plus level shifts and intermittent demand.
-import { LOCATIONS, SKUS, SIGNALS, HISTORY_WEEKS, HORIZON, yearPhase, weekYear, weekDate } from './catalog.js';
+import { LOCATIONS, SKUS, SIGNALS, SEGMENTS, HISTORY_WEEKS, HORIZON, yearPhase, weekYear, weekDate } from './catalog.js';
 import { mulberry32, normal, poisson, gamma } from './rng.js';
 
 const TOTAL = HISTORY_WEEKS + HORIZON;
@@ -41,8 +41,9 @@ const floodClim = (p) => 0.42 * bump(p, 0.53, 0.06);
 /**
  * Build the full synthetic world for a scenario.
  * @param {{seed:number, monsoon:number, leadShock:number}} scenario
+ * @param {{sales?:Array, stock?:Array}} uploads rows parsed from GRD's own CSV exports
  */
-export function generateWorld(scenario) {
+export function generateWorld(scenario, uploads = null) {
   const { seed = 7, monsoon = 1 } = scenario;
   const rand = mulberry32(seed);
 
@@ -121,7 +122,7 @@ export function generateWorld(scenario) {
     return { actual, expected, disruption };
   });
 
-  // Demand history
+  // Demand history, built up from the four customer segments
   const series = [];
   SKUS.forEach((sku, si) => {
     LOCATIONS.forEach((loc, li) => {
@@ -131,20 +132,133 @@ export function generateWorld(scenario) {
       // Some series get a structural level shift (new hospital contract / lost tender)
       const shiftAt = sr() < 0.18 ? HISTORY_WEEKS - 10 - Math.floor(sr() * 50) : -1;
       const shift = shiftAt > 0 ? (sr() < 0.7 ? 1.25 + sr() * 0.4 : 0.65 + sr() * 0.15) : 1;
-      // Depot-level weekly demand aggregates many chemists, so noise is moderate (NB shape 14–30).
       const dispersion = 14 + sr() * 16;
+      const hospitalShare = 0.14 + 0.16 * loc.urban;
+      const share = { retail: 0.52, hospital: hospitalShare, institution: 0.12, stockist: 0.36 - hospitalShare };
+      const tenderOffset = Math.floor(sr() * 4);
+      const seg = Object.fromEntries(SEGMENTS.map((g) => [g.id, new Float32Array(HISTORY_WEEKS)]));
       const y = new Float32Array(HISTORY_WEEKS);
+      const etaAt = (w) => {
+        let e = 0;
+        for (const [k, c] of Object.entries(sku.drivers)) e += c * sig[k][Math.min(w, TOTAL - 1)];
+        return e;
+      };
+      let tenderPot = 0;
       for (let w = 0; w < HISTORY_WEEKS; w += 1) {
-        let eta = 0;
-        for (const [s, c] of Object.entries(sku.drivers)) eta += c * sig[s][w];
-        let lam = base * (1 + (sku.trend * w) / 52) * Math.exp(eta);
-        if (shiftAt > 0 && w >= shiftAt) lam *= shift;
-        lam *= gamma(sr, dispersion) / dispersion;
-        y[w] = poisson(sr, lam);
+        let level = base * (1 + (sku.trend * w) / 52);
+        if (shiftAt > 0 && w >= shiftAt) level *= shift;
+        const eta = etaAt(w);
+        const draw = (lam) => poisson(sr, (lam * gamma(sr, dispersion)) / dispersion);
+        seg.retail[w] = draw(level * share.retail * Math.exp(eta));
+        seg.hospital[w] = draw(level * share.hospital * Math.exp(1.3 * eta));
+        seg.stockist[w] = draw(level * share.stockist * Math.exp(etaAt(w + 1)));
+        tenderPot += level * share.institution * Math.exp(0.5 * eta);
+        if ((w + tenderOffset) % 4 === 0) {
+          seg.institution[w] = Math.max(0, Math.round(tenderPot * (0.75 + 0.5 * sr())));
+          tenderPot = 0;
+        }
+        y[w] = seg.retail[w] + seg.hospital[w] + seg.stockist[w] + seg.institution[w];
       }
-      series.push({ key: `${sku.id}@${loc.id}`, si, li, sku, loc, y, base });
+      series.push({ key: `${sku.id}@${loc.id}`, si, li, sku, loc, y, seg, base, source: 'synthetic' });
     });
   });
 
-  return { scenario, phases, signals, series, years, total: TOTAL };
+  const quality = applyUploads(series, uploads);
+
+  return { scenario, phases, signals, series, years, total: TOTAL, quality, uploads };
+}
+
+const DAY = 86400000;
+export function weekIndexOf(dateStr) {
+  const t = Date.parse(dateStr);
+  if (Number.isNaN(t)) return null;
+  return Math.floor((t - weekDate(0).getTime()) / (7 * DAY));
+}
+
+/** Replace synthetic history with uploaded sales wherever codes match; report data quality. */
+function applyUploads(series, uploads) {
+  const q = { source: 'synthetic', salesRows: 0, salesMatched: 0, stockRows: 0, stockMatched: 0, unknownSkus: [], unknownDepots: [], badRows: 0, outOfRange: 0, seriesWithData: 0, firstWeek: null, lastWeek: null, paddedSeries: 0, staleSeries: 0, staleWeeks: 0 };
+  const rows = uploads?.sales || [];
+  const stock = uploads?.stock || [];
+  q.salesRows = rows.length;
+  q.stockRows = stock.length;
+  if (!rows.length && !stock.length) return q;
+  const byKey = new Map(series.map((s) => [s.key, s]));
+  const skuIds = new Set(SKUS.map((k) => k.id));
+  const locIds = new Set(LOCATIONS.map((l) => l.id));
+  const unknownSku = new Set();
+  const unknownLoc = new Set();
+  const touched = new Map();
+  for (const r of rows) {
+    const w = weekIndexOf(r.week);
+    const units = Number(r.units);
+    if (w == null || !Number.isFinite(units) || units < 0) {
+      q.badRows += 1;
+      continue;
+    }
+    if (!skuIds.has(r.sku)) unknownSku.add(r.sku);
+    if (!locIds.has(r.depot)) unknownLoc.add(r.depot);
+    const s = byKey.get(`${r.sku}@${r.depot}`);
+    if (!s) continue;
+    if (w < 0 || w >= HISTORY_WEEKS) {
+      q.outOfRange += 1;
+      continue;
+    }
+    if (!touched.has(s.key)) {
+      touched.set(s.key, { first: w });
+      s.uploaded = Object.fromEntries(SEGMENTS.map((g) => [g.id, new Float32Array(HISTORY_WEEKS)]));
+      s.uploadedTotal = new Float32Array(HISTORY_WEEKS);
+    }
+    const t = touched.get(s.key);
+    t.first = Math.min(t.first, w);
+    t.last = Math.max(t.last ?? w, w);
+    const segId = SEGMENTS.some((g) => g.id === r.segment) ? r.segment : 'retail';
+    s.uploaded[segId][w] += units;
+    s.uploadedTotal[w] += units;
+    q.salesMatched += 1;
+    q.firstWeek = q.firstWeek == null ? w : Math.min(q.firstWeek, w);
+    q.lastWeek = q.lastWeek == null ? w : Math.max(q.lastWeek, w);
+  }
+  for (const [key, t] of touched) {
+    const s = byKey.get(key);
+    // Weeks before the first uploaded week keep the synthetic history so models still have a full year.
+    if (t.first > 0) q.paddedSeries += 1;
+    for (let w = t.first; w <= t.last; w += 1) {
+      s.y[w] = s.uploadedTotal[w];
+      SEGMENTS.forEach((g) => {
+        s.seg[g.id][w] = s.uploaded[g.id][w];
+      });
+    }
+    // Weeks after the export ends are missing, not zero sales: carry the last 4-week average forward.
+    if (t.last < HISTORY_WEEKS - 1) {
+      q.staleSeries += 1;
+      q.staleWeeks = Math.max(q.staleWeeks, HISTORY_WEEKS - 1 - t.last);
+      const k0 = Math.max(t.first, t.last - 3);
+      const n = t.last - k0 + 1;
+      for (let w = t.last + 1; w < HISTORY_WEEKS; w += 1) {
+        let tot = 0;
+        SEGMENTS.forEach((g) => {
+          let v = 0;
+          for (let k = k0; k <= t.last; k += 1) v += s.uploaded[g.id][k];
+          s.seg[g.id][w] = Math.round(v / n);
+          tot += s.seg[g.id][w];
+        });
+        s.y[w] = tot;
+      }
+    }
+    s.source = t.first > 0 ? 'mixed' : 'uploaded';
+    delete s.uploaded;
+    delete s.uploadedTotal;
+  }
+  for (const r of stock) {
+    const s = byKey.get(`${r.sku}@${r.depot}`);
+    if (!skuIds.has(r.sku)) unknownSku.add(r.sku);
+    if (!locIds.has(r.depot)) unknownLoc.add(r.depot);
+    if (s && Number.isFinite(Number(r.qty)) && weekIndexOf(r.expiry) != null) q.stockMatched += 1;
+  }
+  q.seriesWithData = touched.size;
+  q.unknownSkus = [...unknownSku].filter(Boolean).slice(0, 20);
+  q.unknownDepots = [...unknownLoc].filter(Boolean).slice(0, 20);
+  q.source = touched.size || q.stockMatched ? 'mixed' : 'synthetic';
+  return q;
 }

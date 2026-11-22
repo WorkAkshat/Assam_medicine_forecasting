@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { animate, useReducedMotion } from 'framer-motion';
 import { SKUS, LOCATIONS, VED_LABEL } from '../../engine/catalog';
 import { useEngine } from '../../hooks/useEngine';
+import { useRole } from '../../hooks/useRole';
 
 export const SKU_BY_ID = Object.fromEntries(SKUS.map((s) => [s.id, s]));
 export const LOC_BY_ID = Object.fromEntries(LOCATIONS.map((l) => [l.id, l]));
@@ -92,7 +92,7 @@ export function EngineGate({ children, label = 'Running the forecast engine' }) 
           <div className="h-full w-1/3 animate-sweep bg-monsoon-500" />
         </div>
         <p className="font-display text-lg text-ink-900">{label}…</p>
-        <p className="mt-1 text-sm text-slate-500">Generating 3 years of weekly demand for 260 medicine × depot series, back-testing 5 models and simulating the pilot.</p>
+        <p className="mt-1 text-sm text-slate-500">Reading 3 years of weekly sales for 260 medicine × depot lines, testing 5 forecasting models and sizing this week’s orders.</p>
       </div>
     );
   }
@@ -137,28 +137,39 @@ export function downloadCsv(filename, rows) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/** Compact, engine-driven pilot summary for the role dashboards. */
-export function EnginePilotBanner() {
+/** Rows limited to the depot when the user works as a depot / distributor. */
+export function useScope() {
   const { data } = useEngine();
-  const k = data?.kpis;
+  const { depot } = useRole();
+  const inScope = (x) => !depot || x.loc === depot;
+  return { depot, inScope, rows: data ? data.rows.filter(inScope) : [] };
+}
+
+export function Segmented({ value, onChange, options, label }) {
   return (
-    <div className="flex flex-col justify-between gap-4 rounded-xl bg-ink-950 p-5 text-white md:flex-row md:items-center">
-      <div className="space-y-1">
-        <p className="text-[12px] text-muga-300">NESFIC-I-09 · simulated pilot on synthetic Northeast data</p>
-        <h3 className="font-display text-lg">
-          {k
-            ? `Forecast error down ${(k.accuracy.gain * 100).toFixed(1)}%, stock-out weeks down ${Math.round(k.stockout.gain * 100)}%, expiry loss down ${Math.round(k.expiry.gain * 100)}%`
-            : 'Running the pilot simulation…'}
-        </h3>
-        {k && (
-          <p className="text-sm text-white/60">
-            Fill rate {pct(k.service.baseline)} → {pct(k.service.ai)} · excess stock share {pct(k.excess.baseline)} → {pct(k.excess.ai)}
-          </p>
-        )}
-      </div>
-      <Link to="/pilot-kpis" className="shrink-0 rounded-md bg-muga-400 px-4 py-2 text-sm font-medium text-ink-950 hover:bg-muga-300">
-        Open pilot impact
-      </Link>
+    <div className="inline-flex max-w-full overflow-x-auto rounded-md border border-mist-300 bg-white p-0.5 text-sm" role="radiogroup" aria-label={label}>
+      {options.map(([v, l]) => (
+        <button
+          key={v}
+          type="button"
+          role="radio"
+          aria-checked={value === v}
+          onClick={() => onChange(v)}
+          className={`whitespace-nowrap rounded px-2.5 py-1 transition-colors ${value === v ? 'bg-ink-900 text-white' : 'text-slate-600 hover:text-ink-900'}`}
+        >
+          {l}
+        </button>
+      ))}
     </div>
+  );
+}
+
+export function SampleDataNote() {
+  const { data } = useEngine();
+  if (!data || data.dataQuality.source !== 'synthetic') return null;
+  return (
+    <p className="rounded-md border border-muga-200 bg-muga-50 px-3 py-2 text-[13px] text-muga-800">
+      Showing built-in sample data for the Northeast network. Load GRD’s sales and stock exports under Data sources to plan on real figures.
+    </p>
   );
 }
