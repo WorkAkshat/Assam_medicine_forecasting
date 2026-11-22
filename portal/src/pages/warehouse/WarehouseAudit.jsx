@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Plus, Search } from 'lucide-react';
 import Table from '../../components/common/Table';
 import ExportButton from '../../components/common/ExportButton';
 import Button from '../../components/common/Button';
@@ -145,7 +145,16 @@ export default function WarehouseAudit() {
         </div>
 
         <div className="flex items-center gap-2">
-          <ExportButton label="Export Audit Log" />
+          <Button
+            variant="primary"
+            size="sm"
+            icon={Plus}
+            className="bg-navy-900 hover:bg-navy-950 text-white font-semibold text-xs cursor-pointer shadow-sm flex items-center gap-1.5"
+            onClick={() => setIsLogAuditModalOpen(true)}
+          >
+            Log Cycle Count
+          </Button>
+          <ExportButton label="Export Audit Log" data={audits} />
         </div>
       </div>
 
@@ -170,6 +179,31 @@ export default function WarehouseAudit() {
           <p className="text-2xl font-bold text-navy-950 font-sans">-20 Packs</p>
           <p className="text-[11px] text-slate-500">Documented in-transit carton crush</p>
         </div>
+      </div>
+
+      {/* Search & Filter Toolbar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search audit ID, SKU code, or medicine..."
+            className="w-full pl-9 pr-8 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-navy-950 focus:outline-none focus:ring-1 focus:ring-navy-900 bg-slate-50/60 focus:bg-white"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
+            >
+              ×
+            </button>
+          )}
+        </div>
+        <p className="text-2xs text-slate-500 font-medium">
+          Showing <span className="font-bold text-navy-950">{filteredAudits.length}</span> of {audits.length} audit records
+        </p>
       </div>
 
       {/* Table */}

@@ -5,9 +5,20 @@ import { MOCK_USERS, USER_ROLES } from '../data/mockUsers';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // Read saved role from localStorage if present
+  // Read saved role from URL parameter or localStorage if present
   const [currentUser, setCurrentUser] = useState(() => {
     try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const roleFromUrl = params.get('role');
+        if (roleFromUrl) {
+          const found = MOCK_USERS.find(u => u.roleId === roleFromUrl);
+          if (found) {
+            localStorage.setItem('grd_active_role_id', roleFromUrl);
+            return found;
+          }
+        }
+      }
       const savedRoleId = localStorage.getItem('grd_active_role_id');
       if (savedRoleId) {
         const found = MOCK_USERS.find(u => u.roleId === savedRoleId);

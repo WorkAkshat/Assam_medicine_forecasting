@@ -4,7 +4,8 @@ import {
   Truck,
   MapPin,
   Phone,
-  CheckCircle2
+  CheckCircle2,
+  Search
 } from 'lucide-react';
 import Table from '../../components/common/Table';
 import ExportButton from '../../components/common/ExportButton';
@@ -119,7 +120,7 @@ export default function SupplyChainColdChain() {
         </div>
 
         <div className="flex items-center gap-2">
-          <ExportButton label="Export Transit Sensor Data" />
+          <ExportButton label="Export Transit Sensor Data" data={monitors} />
         </div>
       </div>
 
@@ -146,6 +147,31 @@ export default function SupplyChainColdChain() {
           <p className="text-2xl font-bold text-navy-950 font-sans">NH-27, NH-6, NH-8</p>
           <p className="text-[11px] text-slate-500">Barak Valley, Meghalaya, Tripura</p>
         </div>
+      </div>
+
+      {/* Search Toolbar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search vehicle number, route corridor, SKU..."
+            className="w-full pl-9 pr-8 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-navy-950 focus:outline-none focus:ring-1 focus:ring-navy-900 bg-slate-50/60 focus:bg-white"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
+            >
+              ×
+            </button>
+          )}
+        </div>
+        <p className="text-2xs text-slate-500 font-medium">
+          Showing <span className="font-bold text-navy-950">{filteredMonitors.length}</span> of {monitors.length} monitored trucks
+        </p>
       </div>
 
       {/* Table */}

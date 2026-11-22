@@ -106,7 +106,7 @@ export default function ManagementAvailability() {
         </div>
 
         <div className="flex items-center gap-2">
-          <ExportButton label="Export Availability Register" />
+          <ExportButton label="Export Availability Register" data={NORTHEAST_STATE_AVAILABILITY} filename="northeast_availability_register" />
         </div>
       </div>
 

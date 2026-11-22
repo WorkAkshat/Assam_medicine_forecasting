@@ -39,7 +39,6 @@ const SEGMENT_COLORS = ['#0F2544', '#C85A2E', '#2563EB', '#0D9488'];
 export default function Sales() {
   const { toast } = useToast();
   const [timeRange, setTimeRange] = useState('6M');
-  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const segmentData = [
     { name: 'Govt Medical Colleges & Hospitals', value: MOCK_SALES_SUMMARY.hospitalSharePct },

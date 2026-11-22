@@ -443,6 +443,133 @@ export default function Alerts() {
           </div>
         </form>
       </Drawer>
+
+      {/* Log Operational Incident Alert Modal */}
+      {isCreateModalOpen && (
+        <Modal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          title="Publish Operational Incident Alert"
+          subtitle="Broadcast a real-time risk, transit roadblock, or stockout warning to Northeast monitoring desks"
+          maxWidth="max-w-xl"
+        >
+          <form onSubmit={handleCreateAlert} className="space-y-4 text-xs">
+            <div>
+              <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Incident Title *
+              </label>
+              <input
+                type="text"
+                required
+                value={formAlertTitle}
+                onChange={(e) => setFormAlertTitle(e.target.value)}
+                placeholder="e.g. NH-06 Sonapur Landslide Transport Alert"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Severity Level *
+                </label>
+                <select
+                  value={formAlertSeverity}
+                  onChange={(e) => setFormAlertSeverity(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900 cursor-pointer"
+                >
+                  <option value="critical">Critical (Immediate Escalation)</option>
+                  <option value="warning">Warning (Operational Risk)</option>
+                  <option value="info">Info (Advisory Notice)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Alert Category *
+                </label>
+                <select
+                  value={formAlertType}
+                  onChange={(e) => setFormAlertType(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900 cursor-pointer"
+                >
+                  <option value="Transit Delay">Transit Delay / Highway Risk</option>
+                  <option value="Stock-out Risk">Stock-out Risk</option>
+                  <option value="Demand Surge">Demand Surge Anomaly</option>
+                  <option value="Cold Chain Breach">Cold Chain Excursion</option>
+                  <option value="Batch Quality Hold">Batch Quality Hold</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Corridor / Location *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formAlertLocation}
+                  onChange={(e) => setFormAlertLocation(e.target.value)}
+                  placeholder="e.g. Silchar Regional Corridor (NH-06)"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Affected SKU Code
+                </label>
+                <input
+                  type="text"
+                  value={formAlertSku}
+                  onChange={(e) => setFormAlertSku(e.target.value)}
+                  placeholder="e.g. GRD-TAB-001"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Incident Description *
+              </label>
+              <textarea
+                required
+                rows={2}
+                value={formAlertDesc}
+                onChange={(e) => setFormAlertDesc(e.target.value)}
+                placeholder="Details of the operational occurrence..."
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900 resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Action Required / Recommended Mitigation *
+              </label>
+              <input
+                type="text"
+                required
+                value={formAlertAction}
+                onChange={(e) => setFormAlertAction(e.target.value)}
+                placeholder="e.g. Re-route emergency consignments via Badarpur bypass"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsCreateModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" size="sm" className="bg-navy-900 hover:bg-navy-950 text-white font-bold">
+                Broadcast Alert
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 }

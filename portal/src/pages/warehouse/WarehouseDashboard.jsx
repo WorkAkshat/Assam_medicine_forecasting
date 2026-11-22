@@ -26,7 +26,6 @@ export default function WarehouseDashboard() {
   const [batches] = usePersistentState(STORAGE_KEYS.PLANT_BATCHES, PLANT_PRODUCTION_BATCHES);
   const [selectedGatePass, setSelectedGatePass] = useState(null);
   const [successMsg, setSuccessMsg] = useState('');
-  const [gatePassApproved, setGatePassApproved] = useState(false);
 
   // Dynamic calculations
   const totalPlantPacks = batches.reduce((acc, b) => acc + (b.quantityPacks || 0), 0);

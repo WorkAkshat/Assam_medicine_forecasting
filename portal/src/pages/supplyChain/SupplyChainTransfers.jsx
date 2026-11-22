@@ -262,7 +262,7 @@ export default function SupplyChainTransfers() {
             <Plus className="w-4 h-4 text-terracotta-400" />
             New Stock Reallocation
           </button>
-          <ExportButton label="Export Transfer Manifest" />
+          <ExportButton label="Export Transfer Manifest" data={filteredTransfers} filename="inter_depot_transfers" />
         </div>
       </div>
 

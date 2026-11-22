@@ -375,12 +375,37 @@ export default function Users() {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-medium text-navy-900 mb-1">Functional Department *</label>
+                <Select
+                  value={newDept}
+                  onChange={(val) => setNewDept(val)}
+                  options={[
+                    { value: 'Supply Chain & Logistics', label: 'Supply Chain & Logistics' },
+                    { value: 'Manufacturing & QC', label: 'Manufacturing & QC' },
+                    { value: 'Commercial Sales', label: 'Commercial Sales' },
+                    { value: 'Executive Board', label: 'Executive Board' },
+                    { value: 'Distribution Network', label: 'Distribution Network' },
+                    { value: 'IT & Administration', label: 'IT & Administration' }
+                  ]}
+                  className="w-full justify-between"
+                  dropdownClassName="w-full"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-navy-900 mb-1">Role Permission Level *</label>
                   <Select
                     value={newRole}
-                    onChange={(val) => setNewRole(val)}
+                    onChange={(val) => {
+                      setNewRole(val);
+                      if (val === 'warehouse-staff') setNewDept('Manufacturing & QC');
+                      else if (val === 'sales-manager') setNewDept('Commercial Sales');
+                      else if (val === 'management') setNewDept('Executive Board');
+                      else if (val === 'distributor') setNewDept('Distribution Network');
+                      else setNewDept('Supply Chain & Logistics');
+                    }}
                     options={USER_ROLES.map(r => ({ value: r.id, label: r.name }))}
                     className="w-full justify-between"
                     dropdownClassName="w-full"

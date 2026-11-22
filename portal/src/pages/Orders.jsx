@@ -75,7 +75,9 @@ export default function Orders() {
   const dispatchedCount = orders.filter(o => o.status === 'Dispatched').length;
   const deliveredCount = orders.filter(o => o.status === 'Delivered').length;
   const totalRevenue = orders.reduce((acc, o) => acc + (o.totalAmountINR || 0), 0);
-  const avgFulfillment = (orders.reduce((acc, o) => acc + o.fulfillmentPercentage, 0) / orders.length).toFixed(1);
+  const avgFulfillment = orders.length > 0
+    ? (orders.reduce((acc, o) => acc + o.fulfillmentPercentage, 0) / orders.length).toFixed(1)
+    : '0.0';
 
   // Filtering
   const filteredOrders = orders.filter(order => {

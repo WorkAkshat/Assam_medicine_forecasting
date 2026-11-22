@@ -78,7 +78,7 @@ export default function ManagementFinancials() {
         </div>
 
         <div className="flex items-center gap-2">
-          <ExportButton label="Export Financial ROI Audit" />
+          <ExportButton label="Export Financial ROI Audit" data={WORKING_CAPITAL_OPTIMIZATION} filename="working_capital_optimization" />
         </div>
       </div>
 

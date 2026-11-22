@@ -316,7 +316,17 @@ export default function DistributorDashboard({ onOpenOrderModal }) {
             </div>
             <div>
               <span className="text-2xs text-slate-500 font-medium block">Tax Invoice / E-Way Bill</span>
-              <strong className="text-navy-900 text-xs font-sans">{activeOrder.invoiceNumber}</strong>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedInvoice(activeOrder);
+                  setIsInvoiceModalOpen(true);
+                }}
+                className="text-navy-900 hover:text-terracotta-600 font-bold text-xs font-sans underline cursor-pointer text-left flex items-center gap-1"
+              >
+                <span>{activeOrder.invoiceNumber}</span>
+                <FileText className="w-3 h-3 text-slate-400" />
+              </button>
               <div className="text-slate-500 text-2xs">30-Day Net Credit Active</div>
             </div>
           </div>
@@ -365,6 +375,83 @@ export default function DistributorDashboard({ onOpenOrderModal }) {
           showPagination={true}
         />
       </div>
+
+      {/* Tax Invoice & Consignment Pass Modal */}
+      {selectedInvoice && (
+        <Modal
+          isOpen={isInvoiceModalOpen}
+          onClose={() => setIsInvoiceModalOpen(false)}
+          title={`Tax Invoice & Consignment Pass: ${selectedInvoice.invoiceNumber}`}
+          size="lg"
+        >
+          <div className="space-y-4 text-xs">
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div>
+                <span className="text-2xs text-slate-500 block">Purchase Order</span>
+                <span className="font-bold text-navy-950 font-sans">{selectedInvoice.poNumber}</span>
+              </div>
+              <div>
+                <span className="text-2xs text-slate-500 block">Order Date</span>
+                <span className="font-semibold text-slate-800">{selectedInvoice.orderDate}</span>
+              </div>
+              <div>
+                <span className="text-2xs text-slate-500 block">Payment Terms</span>
+                <span className="font-semibold text-slate-800">{selectedInvoice.paymentTerm}</span>
+              </div>
+              <div>
+                <span className="text-2xs text-slate-500 block">Due Date</span>
+                <span className="font-bold text-terracotta-700 font-sans">{selectedInvoice.dueDate}</span>
+              </div>
+            </div>
+
+            <div className="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2">
+              <h4 className="font-bold text-navy-950 text-xs">Consignment & Carrier Logistics</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div>
+                  <span className="text-2xs text-slate-500 block">Transporter</span>
+                  <span className="font-semibold text-slate-800">{selectedInvoice.transporterName}</span>
+                </div>
+                <div>
+                  <span className="text-2xs text-slate-500 block">Vehicle Number</span>
+                  <span className="font-mono font-bold text-navy-950">{selectedInvoice.vehicleNumber}</span>
+                </div>
+                <div>
+                  <span className="text-2xs text-slate-500 block">Driver Contact</span>
+                  <span className="font-semibold text-slate-800">{selectedInvoice.driverName} ({selectedInvoice.driverPhone})</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+              <h4 className="font-bold text-navy-950 text-xs">Financial & GST Valuation</h4>
+              <div className="grid grid-cols-3 gap-3 text-xs">
+                <div>
+                  <span className="text-2xs text-slate-500 block">Taxable Subtotal</span>
+                  <span className="font-bold text-navy-950 font-sans">{formatCurrency(selectedInvoice.subtotalINR)}</span>
+                </div>
+                <div>
+                  <span className="text-2xs text-slate-500 block">GST (12% Pharma IGST/CGST)</span>
+                  <span className="font-bold text-slate-700 font-sans">{formatCurrency(selectedInvoice.gstINR)}</span>
+                </div>
+                <div>
+                  <span className="text-2xs text-slate-500 block">Total Invoice Amount</span>
+                  <span className="font-bold text-emerald-700 text-sm font-sans">{formatCurrency(selectedInvoice.totalAmountINR)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsInvoiceModalOpen(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
 
     </div>
   );

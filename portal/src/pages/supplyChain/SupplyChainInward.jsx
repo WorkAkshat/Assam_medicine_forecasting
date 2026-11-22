@@ -281,7 +281,7 @@ export default function SupplyChainInward() {
           >
             Log Production Batch
           </Button>
-          <ExportButton label="Export Inward Ledger" />
+          <ExportButton label="Export Inward Ledger" data={filteredBatches} filename="inward_production_batches" />
         </div>
       </div>
 
@@ -528,6 +528,23 @@ export default function SupplyChainInward() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Shelf Life (Months) */}
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Shelf Life (Months) *
+                </label>
+                <select
+                  value={formShelfMonths}
+                  onChange={(e) => setFormShelfMonths(Number(e.target.value))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900 cursor-pointer"
+                >
+                  <option value={12}>12 Months (1 Year)</option>
+                  <option value={18}>18 Months (1.5 Years)</option>
+                  <option value={24}>24 Months (2 Years - Standard cGMP)</option>
+                  <option value={36}>36 Months (3 Years - Extended Stability)</option>
+                </select>
               </div>
 
               {/* Receiving Dock */}

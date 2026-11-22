@@ -20,7 +20,6 @@ import { PHARMA_CATEGORIES, EXTENDED_PHARMA_PORTFOLIO } from '../data/products';
 import { PARTNER_AWARDS } from '../data/company';
 
 export default function PharmaceuticalProducts({ onOpenEnquiry }) {
-  const [selectedForm, setSelectedForm] = useState('all');
   const [expandedCategories, setExpandedCategories] = useState({});
   const [showTestingSpecs, setShowTestingSpecs] = useState(false);
 
@@ -30,11 +29,6 @@ export default function PharmaceuticalProducts({ onOpenEnquiry }) {
       [id]: !prev[id]
     }));
   };
-
-  const allDosageForms = [
-    ...PHARMA_CATEGORIES,
-    ...EXTENDED_PHARMA_PORTFOLIO.filter(item => item.id === 'dry-syrup' || item.id === 'injectables')
-  ];
 
   return (
     <div className="bg-cream-50 min-h-screen">

@@ -203,7 +203,7 @@ export default function SupplyChainApprovals() {
         </div>
 
         <div className="flex items-center gap-2">
-          <ExportButton label="Export Clearance Log" />
+          <ExportButton label="Export Clearance Log" data={approvals} filename="transfer_clearance_log" />
         </div>
       </div>
 

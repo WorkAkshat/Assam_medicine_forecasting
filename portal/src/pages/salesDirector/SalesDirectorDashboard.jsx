@@ -39,7 +39,6 @@ export default function SalesDirectorDashboard() {
   const [selectedApproval, setSelectedApproval] = useState(null);
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
   const [approvalActionType, setApprovalActionType] = useState('approve'); // approve or reject
-  const [toastMessage, setToastMessage] = useState('');
 
   const handleActionClick = (approval, type) => {
     setSelectedApproval(approval);
@@ -154,14 +153,6 @@ export default function SalesDirectorDashboard() {
   return (
     <div className="space-y-6">
       
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-navy-950 text-white px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-top-2 text-xs">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
-
       {/* Sales Director Leadership Banner - Concise & Clean */}
       <div className="bg-gradient-to-r from-navy-950 via-navy-900 to-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-sm border border-navy-800/80 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-full bg-gradient-to-l from-terracotta-500/10 to-transparent pointer-events-none" />

@@ -64,7 +64,9 @@ export default function Distributors() {
   const totalCreditLimit = distributors.reduce((acc, d) => acc + d.creditLimitINR, 0);
   const totalOutstanding = distributors.reduce((acc, d) => acc + d.currentOutstandingINR, 0);
   const totalStockists = distributors.reduce((acc, d) => acc + d.activeStockistsCount, 0);
-  const avgFulfillment = (distributors.reduce((acc, d) => acc + d.orderFulfillmentRate, 0) / distributors.length).toFixed(1);
+  const avgFulfillment = distributors.length > 0
+    ? (distributors.reduce((acc, d) => acc + d.orderFulfillmentRate, 0) / distributors.length).toFixed(1)
+    : '0.0';
 
   // Filtered
   const filteredDistributors = distributors.filter(dist => {

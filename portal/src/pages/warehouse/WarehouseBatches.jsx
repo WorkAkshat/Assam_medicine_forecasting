@@ -221,7 +221,7 @@ export default function WarehouseBatches() {
             <Plus className="w-4 h-4" />
             <span>Manufacture Batch</span>
           </Button>
-          <ExportButton label="Export Batch Register" />
+          <ExportButton label="Export Batch Register" data={batches} filename="production_batches_register" />
         </div>
       </div>
 

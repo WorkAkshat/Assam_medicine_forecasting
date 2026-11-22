@@ -10,7 +10,8 @@ import {
   Target,
   Download,
   Stethoscope,
-  RotateCcw
+  RotateCcw,
+  Plus
 } from 'lucide-react';
 import StatCard from '../../components/common/StatCard';
 import Badge from '../../components/common/Badge';
@@ -214,26 +215,37 @@ export default function SalesFieldForce() {
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          icon={Download}
-          className="text-xs font-semibold whitespace-nowrap self-start sm:self-auto shrink-0"
-          onClick={() => {
-            const csvContent = "data:text/csv;charset=utf-8," + 
-              "ID,Name,Designation,HQ,Territory,TargetCalls,DoneCalls,Adherence,POB,Rating\n" +
-              FIELD_FORCE_ROSTER.map(r => `"${r.id}","${r.name}","${r.designation}","${r.hq}","${r.territory}",${r.doctorCallsTarget},${r.doctorCallsCompleted},${r.callAdherence},${r.pobBookedINR},"${r.rating}"`).join("\n");
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Field_Force_Report_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          }}
-        >
-          Download List (CSV)
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="primary"
+            size="sm"
+            icon={Plus}
+            className="text-xs font-semibold whitespace-nowrap self-start sm:self-auto shrink-0 bg-navy-900 hover:bg-navy-950 text-white"
+            onClick={() => setIsAddRepModalOpen(true)}
+          >
+            Add Medical Rep
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Download}
+            className="text-xs font-semibold whitespace-nowrap self-start sm:self-auto shrink-0"
+            onClick={() => {
+              const csvContent = "data:text/csv;charset=utf-8," + 
+                "ID,Name,Designation,HQ,Territory,TargetCalls,DoneCalls,Adherence,POB,Rating\n" +
+                FIELD_FORCE_ROSTER.map(r => `"${r.id}","${r.name}","${r.designation}","${r.hq}","${r.territory}",${r.doctorCallsTarget},${r.doctorCallsCompleted},${r.callAdherence},${r.pobBookedINR},"${r.rating}"`).join("\n");
+              const encodedUri = encodeURI(csvContent);
+              const link = document.createElement("a");
+              link.setAttribute("href", encodedUri);
+              link.setAttribute("download", `Field_Force_Report_${new Date().toISOString().slice(0,10)}.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
+            Download List (CSV)
+          </Button>
+        </div>
       </div>
 
       {/* 4 Summary Cards */}

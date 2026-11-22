@@ -86,7 +86,7 @@ export default function ManagementGovernance() {
         </div>
 
         <div className="flex items-center gap-2">
-          <ExportButton label="Export Governance Briefing" />
+          <ExportButton label="Export Governance Briefing" data={PILOT_GOVERNANCE_MILESTONES} filename="pilot_governance_milestones" />
         </div>
       </div>
 

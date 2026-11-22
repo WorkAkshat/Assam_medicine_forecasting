@@ -19,6 +19,7 @@ import {
 
 const QUICK_ROLES = [
   {
+    roleId: 'supply-chain-manager',
     roleName: 'Supply Chain Manager',
     user: 'Dr. Abhijit Sarma',
     email: 'abhijit.sarma@grdpharma.in',
@@ -27,6 +28,7 @@ const QUICK_ROLES = [
     badge: 'Operations Desk'
   },
   {
+    roleId: 'management',
     roleName: 'Executive Leadership',
     user: 'Gautam R. Dhanuka',
     email: 'gautam.dhanuka@grdpharma.in',
@@ -35,6 +37,7 @@ const QUICK_ROLES = [
     badge: 'Board & Governance'
   },
   {
+    roleId: 'warehouse-staff',
     roleName: 'Warehouse Controller',
     user: 'Pranabesh Bora',
     email: 'pranabesh.bora@grdpharma.in',
@@ -43,6 +46,7 @@ const QUICK_ROLES = [
     badge: 'Production & Batches'
   },
   {
+    roleId: 'distributor',
     roleName: 'Distributor Desk',
     user: 'Bipul Goswami',
     email: 'bipul@pragjyotishmedico.in',
@@ -51,6 +55,8 @@ const QUICK_ROLES = [
     badge: 'Channel Partner'
   }
 ];
+
+const PORTAL_BASE_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5175';
 
 export default function PortalLoginModal({ isOpen, onClose }) {
   const [email, setEmail] = useState('abhijit.sarma@grdpharma.in');
@@ -73,20 +79,23 @@ export default function PortalLoginModal({ isOpen, onClose }) {
     e.preventDefault();
     setIsLoading(true);
 
+    const activeRole = QUICK_ROLES[selectedRoleIndex]?.roleId || 'supply-chain-manager';
+    const targetUrl = `${PORTAL_BASE_URL}/dashboard?role=${activeRole}`;
+
     setTimeout(() => {
       setIsLoading(false);
       setLoginSuccess(true);
       setTimeout(() => {
-        // Redirect to PharmaPredict AI Portal on port 5175
-        window.open('http://localhost:5175/dashboard', '_blank');
+        window.open(targetUrl, '_blank', 'noopener,noreferrer');
         setLoginSuccess(false);
         onClose();
-      }, 900);
-    }, 800);
+      }, 400);
+    }, 400);
   };
 
   const handleDirectLaunch = () => {
-    window.open('http://localhost:5175/dashboard', '_blank');
+    const activeRole = QUICK_ROLES[selectedRoleIndex]?.roleId || 'supply-chain-manager';
+    window.open(`${PORTAL_BASE_URL}/dashboard?role=${activeRole}`, '_blank', 'noopener,noreferrer');
     onClose();
   };
 

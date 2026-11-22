@@ -14,7 +14,6 @@ import { NORTHEAST_STATE_AVAILABILITY, WORKING_CAPITAL_OPTIMIZATION, PILOT_GOVER
 import { formatNumber } from '../../utils/formatters';
 
 export default function ManagementDashboard() {
-  const [selectedState, setSelectedState] = useState(null);
 
   return (
     <div className="space-y-6">
@@ -110,7 +109,7 @@ export default function ManagementDashboard() {
             </p>
           </div>
 
-          <ExportButton label="Export State Scorecard" />
+          <ExportButton label="Export State Scorecard" data={NORTHEAST_STATE_AVAILABILITY} filename="northeast_state_availability" />
         </div>
 
         {/* State Cards Grid */}

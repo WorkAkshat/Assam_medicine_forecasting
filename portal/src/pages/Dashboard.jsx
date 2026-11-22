@@ -129,7 +129,7 @@ export default function Dashboard() {
             align="right"
           />
 
-          <ExportButton label="Export CSV" />
+          <ExportButton label="Export CSV" data={matchingSkus} filename="skus_inventory_forecast" />
         </div>
       </div>
 

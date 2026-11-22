@@ -502,6 +502,117 @@ export default function DistributorStockists() {
         </Modal>
       )}
 
+      {/* Register New Retail Stockist Modal */}
+      {isRegisterModalOpen && (
+        <Modal
+          isOpen={isRegisterModalOpen}
+          onClose={() => setIsRegisterModalOpen(false)}
+          title="Register Retail Chemist Store"
+          subtitle="Add an authorized sub-stockist or retail pharmacy to your distribution territory"
+          maxWidth="max-w-lg"
+        >
+          <form onSubmit={handleRegisterStockist} className="space-y-4 text-xs">
+            <div>
+              <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Pharmacy / Store Name *
+              </label>
+              <input
+                type="text"
+                required
+                value={formName}
+                onChange={(e) => setFormName(e.target.value)}
+                placeholder="e.g. Kamakhya Medical & Surgical Store"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Proprietor / Contact Person *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formOwner}
+                  onChange={(e) => setFormOwner(e.target.value)}
+                  placeholder="e.g. Mr. Dhiren Kalita"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Phone Number *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formPhone}
+                  onChange={(e) => setFormPhone(e.target.value)}
+                  placeholder="e.g. +91 94351 88291"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Locality / Market Area *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formLocality}
+                  onChange={(e) => setFormLocality(e.target.value)}
+                  placeholder="e.g. Panbazar"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Drug License Number *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formLicense}
+                  onChange={(e) => setFormLicense(e.target.value)}
+                  placeholder="e.g. DL-KAM-2026-8812"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Sanctioned Credit Limit (INR) *
+              </label>
+              <input
+                type="number"
+                min="25000"
+                step="25000"
+                required
+                value={formCreditLimit}
+                onChange={(e) => setFormCreditLimit(Number(e.target.value))}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsRegisterModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" size="sm" className="bg-navy-900 hover:bg-navy-950 text-white font-bold">
+                Register Chemist
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
     </div>
   );
 }

@@ -659,6 +659,20 @@ export default function Logistics() {
 
               <div>
                 <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Estimated Delivery (ETA) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formEta}
+                  onChange={(e) => setFormEta(e.target.value)}
+                  placeholder="e.g. Tomorrow 07:00 AM"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
                   Cold Chain / Storage Protocol *
                 </label>
                 <select

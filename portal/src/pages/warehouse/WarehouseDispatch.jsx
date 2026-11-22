@@ -263,7 +263,7 @@ export default function WarehouseDispatch() {
           >
             Issue Dispatch Gate Pass
           </Button>
-          <ExportButton label="Export Gate Log" />
+          <ExportButton label="Export Gate Log" data={dispatches} filename="dock_dispatch_gate_log" />
         </div>
       </div>
 
@@ -436,6 +436,162 @@ export default function WarehouseDispatch() {
               </button>
             </div>
           </div>
+        </Modal>
+      )}
+
+      {/* Create New Dispatch Gate Pass Modal */}
+      {isCreateGatePassOpen && (
+        <Modal
+          isOpen={isCreateGatePassOpen}
+          onClose={() => setIsCreateGatePassOpen(false)}
+          title="Issue Manufacturing Dock Gate Pass"
+          subtitle="Generate Schedule M compliant transport gate authorization for commercial or inter-depot consignment"
+          maxWidth="max-w-xl"
+        >
+          <form onSubmit={handleCreateGatePass} className="space-y-4 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Gate Pass Serial ID *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formGatePassId}
+                  onChange={(e) => setFormGatePassId(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Order PO Reference *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formOrderPo}
+                  onChange={(e) => setFormOrderPo(e.target.value)}
+                  placeholder="e.g. GRD-PO-GHY-1084"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Destination Warehouse / Depot *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formDest}
+                  onChange={(e) => setFormDest(e.target.value)}
+                  placeholder="e.g. Guwahati Central Depot (Mother Hub)"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Loading Dock Bay *
+                </label>
+                <select
+                  value={formDockBay}
+                  onChange={(e) => setFormDockBay(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900 cursor-pointer"
+                >
+                  <option value="Dock Bay 01 - Finished Goods">Dock Bay 01 - Finished Goods</option>
+                  <option value="Dock Bay 02 - Inter-Depot Fleet">Dock Bay 02 - Inter-Depot Fleet</option>
+                  <option value="Dock Bay 03 - Sanitizer / Flammable">Dock Bay 03 - Sanitizer / Flammable</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Transporter / Fleet Agency *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formCarrier}
+                  onChange={(e) => setFormCarrier(e.target.value)}
+                  placeholder="e.g. Brahmaputra Fast Freight"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Vehicle Registration Number *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formVehicle}
+                  onChange={(e) => setFormVehicle(e.target.value)}
+                  placeholder="e.g. AS-01-GC-4482"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Assigned Driver Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formDriver}
+                  onChange={(e) => setFormDriver(e.target.value)}
+                  placeholder="e.g. Dilip Kalita"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Driver Phone Number *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formPhone}
+                  onChange={(e) => setFormPhone(e.target.value)}
+                  placeholder="e.g. +91 94350 44910"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                Packages &amp; Units Consigned *
+              </label>
+              <input
+                type="text"
+                required
+                value={formPackages}
+                onChange={(e) => setFormPackages(e.target.value)}
+                placeholder="e.g. 320 Cartons (15,000 Packs)"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-navy-950 focus:bg-white focus:outline-none focus:ring-1 focus:ring-navy-900"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsCreateGatePassOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" size="sm" className="bg-navy-900 hover:bg-navy-950 text-white font-bold">
+                Authorize &amp; Print Gate Pass
+              </Button>
+            </div>
+          </form>
         </Modal>
       )}
 

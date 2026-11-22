@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Building2,
   RotateCcw,
-  ShieldCheck
+  ShieldCheck,
+  Plus
 } from 'lucide-react';
 import StatCard from '../components/common/StatCard';
 import Badge from '../components/common/Badge';
@@ -425,6 +426,14 @@ export default function Inventory() {
         </div>
         <div className="flex items-center gap-2.5">
           <Button 
+            variant="primary" 
+            size="sm"
+            onClick={() => setIsAddStockModalOpen(true)}
+            icon={Plus}
+          >
+            Direct Stock Inward
+          </Button>
+          <Button 
             variant="outline" 
             size="sm"
             onClick={handleExportStock}
@@ -433,7 +442,7 @@ export default function Inventory() {
             Export Stock (CSV)
           </Button>
           <Button 
-            variant="primary" 
+            variant="outline" 
             size="sm"
             onClick={handleSyncDepots}
             icon={RefreshCw}

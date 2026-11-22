@@ -19,6 +19,7 @@ export default function Table({
   columns = [],
   data = [],
   keyExtractor,
+  keyField,
   
   // Custom children/headers API fallback
   headers = [],
@@ -29,6 +30,7 @@ export default function Table({
   subtitle,
   emptyMessage = 'No records found matching your filters.',
   pageSize: initialPageSize = 10,
+  rowsPerPage,
   loading = false,
   showPagination = true,
   showSearch = false,
@@ -48,7 +50,7 @@ export default function Table({
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(initialPageSize);
+  const [pageSize, setPageSize] = useState(rowsPerPage || initialPageSize);
 
   // Table search state
   const [tableSearch, setTableSearch] = useState('');
@@ -88,17 +90,19 @@ export default function Table({
     // Sort
     if (sortKey !== null && columns[sortKey]) {
       const col = columns[sortKey];
-      result.sort((a, b) => {
-        let valA = col.sortValue ? col.sortValue(a) : (col.accessor ? a[col.accessor] : a[Object.keys(a)[sortKey]]);
-        let valB = col.sortValue ? col.sortValue(b) : (col.accessor ? b[col.accessor] : b[Object.keys(b)[sortKey]]);
+      if (col.sortable !== false && col.header !== 'Actions' && col.header !== 'Action') {
+        result.sort((a, b) => {
+          let valA = col.sortValue ? col.sortValue(a) : (col.accessor ? a[col.accessor] : '');
+          let valB = col.sortValue ? col.sortValue(b) : (col.accessor ? b[col.accessor] : '');
 
-        if (typeof valA === 'string') valA = valA.toLowerCase();
-        if (typeof valB === 'string') valB = valB.toLowerCase();
+          if (typeof valA === 'string') valA = valA.toLowerCase();
+          if (typeof valB === 'string') valB = valB.toLowerCase();
 
-        if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
-        if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
-      });
+          if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+          if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+          return 0;
+        });
+      }
     }
 
     return result;
@@ -117,14 +121,15 @@ export default function Table({
 
   // Export CSV Handler
   const handleExportCSV = () => {
-    if (!isDeclarative || processedData.length === 0) return;
+    const exportableCols = columns.filter(c => c.header !== 'Actions' && c.header !== 'Action' && c.exportable !== false);
+    if (!isDeclarative || processedData.length === 0 || exportableCols.length === 0) return;
 
     // Header labels
-    const headers = columns.map(c => typeof c.header === 'string' ? c.header : (c.title || 'Column'));
+    const headers = exportableCols.map(c => typeof c.header === 'string' ? c.header : (c.title || 'Column'));
     
     // Rows
     const rows = processedData.map(row => {
-      return columns.map(col => {
+      return exportableCols.map(col => {
         let val = col.exportValue 
           ? col.exportValue(row) 
           : (col.accessor ? row[col.accessor] : '');
@@ -226,7 +231,10 @@ export default function Table({
             <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-700 font-semibold text-xs tracking-normal select-none">
               {columns.map((col, idx) => {
                 const isSorted = sortKey === idx;
-                const canSort = col.sortable !== false;
+                const canSort = col.sortable !== false && 
+                  col.header !== 'Actions' && 
+                  col.header !== 'Action' && 
+                  Boolean(col.sortValue || col.accessor);
 
                 const align = col.align || (
                   (col.headerClassName?.includes('text-right') || col.className?.includes('text-right')) ? 'right' :
@@ -295,7 +303,7 @@ export default function Table({
             ) : (
               // Real Data Rows
               paginatedData.map((row, rowIdx) => {
-                const key = keyExtractor ? keyExtractor(row, rowIdx) : (row.id || rowIdx);
+                const key = keyExtractor ? keyExtractor(row, rowIdx) : (keyField && row[keyField] ? row[keyField] : (row.id || rowIdx));
                 return (
                   <tr 
                     key={key} 

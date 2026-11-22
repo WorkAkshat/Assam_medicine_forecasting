@@ -35,7 +35,7 @@ export default function PilotMonitoring() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <ExportButton label="Export CSV" />
+          <ExportButton label="Export CSV" data={PILOT_KPIS} filename="pilot_kpi_monitoring" />
         </div>
       </div>
 
