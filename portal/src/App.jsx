@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth';
 import { SyncProvider } from './hooks/useSyncStatus';
 import { ToastProvider } from './hooks/useToast';
+import { EngineProvider } from './hooks/useEngine';
 import AppRoutes from './routes/AppRoutes';
 import ScrollToTop from './components/common/ScrollToTop';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -13,10 +14,12 @@ export default function App() {
       <AuthProvider>
         <SyncProvider>
           <ToastProvider>
-            <ScrollToTop />
-            <ErrorBoundary>
-              <AppRoutes />
-            </ErrorBoundary>
+            <EngineProvider>
+              <ScrollToTop />
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
+            </EngineProvider>
           </ToastProvider>
         </SyncProvider>
       </AuthProvider>

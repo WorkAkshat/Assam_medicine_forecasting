@@ -71,19 +71,50 @@ npm run build
 
 ---
 
-## 🎯 NESFIC-I-09 Target Metric Dashboard
+## 🧠 Forecasting & replenishment engine (`portal/src/engine`)
 
-The portal specifically tracks and enforces the **5 mandated intended outcomes** defined in the official NESFIC-I-09 challenge brief:
+The portal now runs a real engine in a **Web Worker** (no UI blocking; a full run takes ~0.25 s):
 
-| # | Mandated Target Outcome | Agreed Baseline | Mandated Target | Pilot Actual (Week 6) | Status |
-|---|-------------------------|-----------------|-----------------|-----------------------|--------|
-| 1 | **Demand Forecast Accuracy Gain** | 71.6% accuracy (28.4% MAPE) | ≥ 20% improvement (≥ 85.9%) | **88.4% accuracy** (11.6% MAPE) | 🟢 **Achieved (+23.5%)** |
-| 2 | **Stock-Out Incidence Reduction** | 12.8% of order cycles | ≥ 20% reduction (≤ 10.2%) | **4.2% incidence** | 🟢 **Achieved (-67.2%)** |
-| 3 | **Excess / Slow-Moving Reduction** | 18.5% of total inventory | ≥ 15% reduction (≤ 15.7%) | **9.8% excess share** | 🟢 **Achieved (-47.0%)** |
-| 4 | **Expiry-Related Loss Reduction** | 8.5% annual loss (₹42.5 L) | ≥ 15% reduction (≤ 7.2%) | **2.8% loss (₹14.0 L)** | 🟢 **Achieved (-67.1%)** |
-| 5 | **Order Fulfilment / Service SLA** | 84.2% SLA adherence | ≥ 10 percentage points (≥ 94.2%) | **96.8% hospital SLA** | 🟢 **Achieved (+12.6 pts)** |
+| Step | File | What it does |
+|---|---|---|
+| Synthetic Northeast data | `generate.js`, `catalog.js` | 3 years of weekly demand for 20 medicines × 13 depots, driven by monsoon rainfall, Brahmaputra/Barak floods, malaria & dengue seasons, winter respiratory illness, national deworming days, Bihu & Durga Puja, level shifts and intermittent demand. Lead times vary by route, with floods, landslides and blockades. **Clearly labelled synthetic** for the application stage. |
+| Forecast models | `models.js` | Manual rule (4-week average, the baseline), same-week-last-year, exponential smoothing, Croston–SBA for intermittent demand, and a signal-aware ridge regression. They are blended by a per-series weighted ensemble and include 80% prediction ranges plus driver explanations. |
+| Back-test | `engine.js` | Rolling-origin back-test (7 origins × 4-week horizon) with **no look-ahead**. |
+| Inventory policy | `policy.js` | Safety stock from forecast error **and lead-time variability**, VED-based service levels (Vital 98%, Essential 95%, Desirable 90%), order-up-to levels, a shelf-life cap, FEFO expiry risk, and greedy depot-to-depot redistribution. |
+| Pilot simulation | `simulate.js` | Replays the last 26 weeks twice from identical stock, demand and transport shocks: once with today's manual habits, once with the AI plan. This produces the five NESFIC KPIs. |
 
----
+Default scenario results (they change with the **Pilot impact** controls):
+
+| KPI | Manual | AI plan | Target |
+|---|---|---|---|
+| Forecast accuracy (4-week planning bucket) | ~85% | ~88% (≈20% less error) | +20% |
+| Stock-out incidence | ~7% of weeks | <1% | −20% |
+| Excess / slow-moving share | ~17% | ~13% | −15% |
+| Expiry loss | ~1.1% | ~0% | −15% |
+| Fill rate | ~95% | ~99.9% | +10 pts (capped by the high synthetic baseline) |
+
+## 🗺️ New screens
+
+- **Control tower (`/control-tower`)**: a 3D relief of the Northeast (Brahmaputra and Barak rivers). Depot pillars show stock value, colour shows service risk, and animated shipments flow from the Rani hub. Click any depot to drill down.
+- **Forecast studio (`/demand-forecasting`)**: history, the AI forecast with its likely range, back-tested points, the model scoreboard, demand drivers and the replenishment maths for any medicine × depot.
+- **Replenishment plan (`/smart-replenishment`)**: prioritised suggested orders with editable quantities, approval and CSV export.
+- **Expiry and surplus (`/expiry-management`)**: FEFO expiry risk, surplus stock, and transfer suggestions you can book.
+- **Pilot impact (`/pilot-kpis`)**: the five KPIs measured against their targets. Stress-test them with monsoon severity, transport disruption, safety margin and transfer controls.
+
+## 🎨 Design system: “Brahmaputra”
+
+- **River ink** `#0E2530`: structure, the sidebar and the 3D night map
+- **Monsoon teal** `#0E7570`: actions and healthy states
+- **Muga-silk gold** `#C08427`: AI forecasts and insights (after Assam's golden silk)
+- **Mist** `#EEF3F2`: page background
+- Type: **Familjen Grotesk** (display) and **IBM Plex Sans** (body, with tabular figures)
+
+## ⚡ Performance
+
+- Every route is lazy-loaded. The portal's first-load JS dropped from one 1.5 MB bundle to about 195 KB of app code plus a shared React chunk.
+- three.js and the charts load only on pages that use them.
+- The engine runs in a Web Worker, and results are cached per session, so reloads paint instantly.
+- Animations respect `prefers-reduced-motion`.
 
 ## 📦 Complete 20-Module Implementation
 
@@ -107,14 +138,6 @@ The portal specifically tracks and enforces the **5 mandated intended outcomes**
 18. **Data Import & ERP Integration (`/data-import`)**: Drag-and-drop CSV/Excel ingestion for Tally Prime, Marg ERP, and SAP Business One with column validation.
 19. **User & Access Governance (`/users`)**: Role-Based Access Control (RBAC) across 8 user personas with a complete permissions matrix.
 20. **System Settings & Audit Trail (`/settings`)**: Monsoon safety stock multipliers, low-bandwidth offline caching, and immutable activity ledger.
-
----
-
-## 🎨 Enterprise Design System
-- **Deep Navy Blue (`#0F2544` / `#0A192F`)**: Authority, precision, pharmaceutical corporate heritage.
-- **Terracotta Orange (`#C85A2E`)**: Actionable alerts, high-priority buttons, brand identity accent.
-- **Clean Cream / Off-White (`#FAFBFD` / `#F8FAFC`)**: Crisp readability, reducing cognitive strain.
-- **Status Semantics**: Emerald for optimal stock & achieved KPIs, Amber for watchlists, Rose for critical stockout/expiry alerts.
 
 ---
 

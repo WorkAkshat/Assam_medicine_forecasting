@@ -1,10 +1,29 @@
-import React from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import HighlightCards from './HighlightCards';
 
+const HeroScene = lazy(() => import('./HeroScene'));
+
+function useCan3D() {
+  const [ok, setOk] = useState(false);
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let gl = false;
+    try {
+      const c = document.createElement('canvas');
+      gl = !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      gl = false;
+    }
+    setOk(gl && !reduce);
+  }, []);
+  return ok;
+}
+
 export default function Hero({ onOpenEnquiry }) {
+  const can3D = useCan3D();
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#FCFDFB] via-[#FAFCFA] to-white pt-6 pb-0 sm:pt-8">
       
@@ -23,29 +42,17 @@ export default function Hero({ onOpenEnquiry }) {
             className="lg:col-span-5 xl:col-span-5 space-y-5 sm:space-y-6 pt-1 lg:pt-0"
           >
             
-            {/* Small company label */}
-            <div className="inline-flex items-center gap-2">
-              <span className="text-xs font-bold tracking-widest uppercase text-forest-700 bg-forest-50 px-3.5 py-1.5 rounded-full border border-forest-100/80 shadow-sm">
-                GRD PHARMACEUTICALS
-              </span>
-            </div>
+            <p className="text-sm font-medium text-forest-600">GRD Pharmaceuticals, Rani, Assam · since 2006</p>
 
-            {/* Main Headline */}
             <div className="space-y-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.3rem] xl:text-[3.8rem] font-serif font-extrabold text-forest-900 leading-[1.08] tracking-tight">
-                Healthcare,
-                <br />
-                <span className="font-serif italic font-normal text-forest-700 block mt-1">
-                  Made with Care.
-                </span>
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-[3.4rem] xl:text-[3.9rem] font-semibold text-forest-950 leading-[1.04] tracking-[-0.02em]">
+                Medicines made in Assam, ready where the Northeast needs them.
               </h1>
-              {/* Terracotta horizontal accent bar */}
-              <div className="w-14 h-1.5 bg-terracotta-500 rounded-full mt-3.5" />
             </div>
 
             {/* Short company introduction */}
             <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-lg">
-              A trusted name in pharmaceutical and hygiene products, committed to improving everyday health and well-being across Northeast India.
+              Tablets, capsules, syrups and hygiene products from our cGMP plant at Rani, now planned with demand forecasting so depots from Dibrugarh to Aizawl stay stocked through monsoon, floods and festival weeks.
             </p>
 
             {/* Action Buttons */}
@@ -79,31 +86,30 @@ export default function Hero({ onOpenEnquiry }) {
             className="lg:col-span-7 xl:col-span-7 relative"
           >
             <div className="relative w-full">
-              
-              {/* Image Container with Organic Curved boundary matching reference */}
-              <div className="relative rounded-3xl sm:rounded-4xl lg:rounded-[2.5rem] overflow-hidden shadow-2xl border border-forest-100/80 bg-white aspect-[16/10]">
-                <img
-                  src="/images/hero-lab.webp"
-                  alt="Scientist working in GRD modern pharmaceutical laboratory"
-                  className="w-full h-full object-cover object-center transform hover:scale-[1.01] transition-transform duration-700"
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  onError={(e) => {
-                    e.currentTarget.src = '/images/hero-lab.png';
-                  }}
-                />
-
-                {/* Subtle soft organic wave overlay at bottom right matching reference */}
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-white/10 via-transparent to-transparent" />
-              </div>
-
-              {/* Floating verified badge */}
-              <div className="hidden sm:flex absolute -bottom-4 -left-4 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-forest-100 items-center gap-3 z-10">
-                <div className="w-3 h-3 rounded-full bg-blue-600 animate-pulse" />
-                <div className="text-left">
-                  <p className="text-xs sm:text-sm font-bold text-forest-900">cGMP &amp; ISO Certified</p>
-                  <p className="text-[11px] text-gray-500">Rani Industrial Area, Assam</p>
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-forest-950 via-forest-900 to-forest-800 aspect-[16/11] sm:aspect-[16/10]">
+                {can3D ? (
+                  <Suspense fallback={null}>
+                    <HeroScene />
+                  </Suspense>
+                ) : (
+                  <img
+                    src="/images/hero-lab.webp"
+                    alt="Scientist working in GRD's pharmaceutical laboratory"
+                    className="h-full w-full object-cover opacity-90"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    onError={(e) => {
+                      e.currentTarget.src = '/images/hero-lab.png';
+                    }}
+                  />
+                )}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-forest-950/90 to-transparent p-5 sm:p-6">
+                  <div>
+                    <p className="font-display text-lg text-white sm:text-xl">20 formulations, 13 depots, 8 states</p>
+                    <p className="text-sm text-white/65">Move your pointer to turn the shelf</p>
+                  </div>
+                  <span className="hidden rounded-full bg-muga-400 px-3 py-1 text-xs font-semibold text-forest-950 sm:inline">cGMP & ISO certified</span>
                 </div>
               </div>
             </div>

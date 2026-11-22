@@ -1,37 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Familjen Grotesk', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   
   /* Primary Deep Navy Blue Brand Identity */
-  --color-navy-950: #050E1C;
-  --color-navy-900: #0A192F;
-  --color-navy-850: #0E2340;
-  --color-navy-800: #122B4E;
-  --color-navy-700: #1A3D6D;
-  --color-navy-600: #23528F;
-  --color-navy-500: #2E6BB3;
-  --color-navy-100: #DFEAF5;
-  --color-navy-50: #F0F5FA;
+  --color-navy-950: #081820;
+  --color-navy-900: #0E2530;
+  --color-navy-850: #112A35;
+  --color-navy-800: #15303B;
+  --color-navy-700: #1D3D4A;
+  --color-navy-600: #284E5D;
+  --color-navy-500: #376475;
+  --color-navy-100: #D5E3E8;
+  --color-navy-50: #EEF4F6;
   
   /* Backward-compatible aliases for theme tokens */
-  --color-forest-950: #050E1C;
-  --color-forest-900: #0A192F;
-  --color-forest-800: #122B4E;
-  --color-forest-700: #1A3D6D;
+  --color-forest-950: #081820;
+  --color-forest-900: #0E2530;
+  --color-forest-800: #15303B;
+  --color-forest-700: #1D3D4A;
 
   /* Accent: Terracotta Orange */
-  --color-terracotta-500: #C85A2E;
-  --color-terracotta-600: #B5481F;
+  --color-terracotta-500: #0E7570;
+  --color-terracotta-600: #0D5E5B;
 
   /* Clean Backgrounds: Warm White & Soft Ivory */
-  --color-cream-50: #FAFBFD;
-  --color-cream-100: #F4F6F9;
+  --color-cream-50: #F6F9F8;
+  --color-cream-100: #EEF3F2;
   --color-sage-50: #F1F6FA;
   --color-sage-100: #E4EDF5;
 }
@@ -74,7 +73,7 @@
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #F0F5FA;
+    background: #EEF4F6;
   }
   ::-webkit-scrollbar-thumb {
     background: #94A3B8;

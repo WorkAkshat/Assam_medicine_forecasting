@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Header, Footer, EnquiryModal, PortalLoginModal, ScrollToTop } from '@/components';
 
 // Route Pages
 import Home from '@/pages/Home';
-import About from '@/pages/About';
-import PharmaceuticalProducts from '@/pages/PharmaceuticalProducts';
-import HygieneProducts from '@/pages/HygieneProducts';
-import ProductDetails from '@/pages/ProductDetails';
-import Contact from '@/pages/Contact';
+const About = lazy(() => import('@/pages/About'));
+const PharmaceuticalProducts = lazy(() => import('@/pages/PharmaceuticalProducts'));
+const HygieneProducts = lazy(() => import('@/pages/HygieneProducts'));
+const ProductDetails = lazy(() => import('@/pages/ProductDetails'));
+const Contact = lazy(() => import('@/pages/Contact'));
 
-function AnimatedRoutes({ onOpenEnquiry }) {
+function AnimatedRoutes({ onOpenEnquiry, onOpenPortal }) {
   const location = useLocation();
 
   return (
@@ -24,8 +24,9 @@ function AnimatedRoutes({ onOpenEnquiry }) {
         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
         className="w-full"
       >
+        <Suspense fallback={<div className="min-h-[60vh]" />}>
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Home onOpenEnquiry={onOpenEnquiry} />} />
+          <Route path="/" element={<Home onOpenEnquiry={onOpenEnquiry} onOpenPortal={onOpenPortal} />} />
           <Route path="/about" element={<About onOpenEnquiry={onOpenEnquiry} />} />
           <Route 
             path="/pharmaceutical-products" 
@@ -43,6 +44,7 @@ function AnimatedRoutes({ onOpenEnquiry }) {
           {/* Catch-all redirect to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
       </motion.div>
     </AnimatePresence>
   );
@@ -76,7 +78,7 @@ export default function App() {
 
         {/* Dynamic Route Pages with Smooth Page Transitions */}
         <main className="flex-grow">
-          <AnimatedRoutes onOpenEnquiry={handleOpenEnquiry} />
+          <AnimatedRoutes onOpenEnquiry={handleOpenEnquiry} onOpenPortal={() => setIsPortalLoginOpen(true)} />
         </main>
 
         {/* Global Footer */}

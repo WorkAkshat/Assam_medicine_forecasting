@@ -9,41 +9,41 @@ export default {
       colors: {
         // Primary Theme: Deep Navy Blue (Executive, clinical, authoritative pharmaceutical palette)
         navy: {
-          50: '#F0F5FA',  // Softest ice-blue tint for light surfaces & badges
-          100: '#DFEAF5', // Light slate blue border & container accent
-          200: '#BFD5ED', // Subtle sky-slate for pills & borders
-          300: '#8EB5DE', // Muted steel blue
-          400: '#5A8FCB', // Refined clinical slate blue
-          500: '#2E6BB3', // Vibrant medical blue
-          600: '#23528F', // Rich corporate sapphire
-          700: '#1A3D6D', // Deep royal navy
-          800: '#122B4E', // Midnight navy
-          850: '#0E2340', // Rich dark navy gradient stop
-          900: '#0A192F', // Signature Deep Navy Blue (hero banners, dark cards)
-          950: '#050E1C', // Obsidian navy (darkest gradient stop & footer)
+          50: '#EEF4F6',  // Softest ice-blue tint for light surfaces & badges
+          100: '#D5E3E8', // Light slate blue border & container accent
+          200: '#ABC6D0', // Subtle sky-slate for pills & borders
+          300: '#7FA5B3', // Muted steel blue
+          400: '#548293', // Refined clinical slate blue
+          500: '#376475', // Vibrant medical blue
+          600: '#284E5D', // Rich corporate sapphire
+          700: '#1D3D4A', // Deep royal navy
+          800: '#15303B', // Midnight navy
+          850: '#112A35', // Rich dark navy gradient stop
+          900: '#0E2530', // Signature Deep Navy Blue (hero banners, dark cards)
+          950: '#081820', // Obsidian navy (darkest gradient stop & footer)
         },
         // Forest mapped directly to Deep Navy Blue for universal consistency
         forest: {
-          50: '#F0F5FA',
-          100: '#DFEAF5',
-          200: '#BFD5ED',
-          300: '#8EB5DE',
-          400: '#5A8FCB',
-          500: '#2E6BB3',
-          600: '#23528F',
-          700: '#1A3D6D',
-          800: '#122B4E',
-          850: '#0E2340',
-          900: '#0A192F', // Exact signature Deep Navy Blue
-          950: '#050E1C', // Obsidian dark navy
+          50: '#EEF4F6',
+          100: '#D5E3E8',
+          200: '#ABC6D0',
+          300: '#7FA5B3',
+          400: '#548293',
+          500: '#376475',
+          600: '#284E5D',
+          700: '#1D3D4A',
+          800: '#15303B',
+          850: '#112A35',
+          900: '#0E2530', // Exact signature Deep Navy Blue
+          950: '#081820', // Obsidian dark navy
         },
         // Warm White & Soft Ivory Clean Backgrounds
         cream: {
-          50: '#FAFBFD',  // Clean porcelain warm white (page body)
-          100: '#F4F6F9', // Soft ivory pearl
-          200: '#E9EDF2',
-          300: '#DCE2EA',
-          400: '#CAD2DE',
+          50: '#F6F9F8',  // Clean porcelain warm white (page body)
+          100: '#EEF3F2', // Soft ivory pearl
+          200: '#E1E9E7',
+          300: '#CBD8D5',
+          400: '#B8C9C5',
         },
         // Light Blue & Subtle Neutral Shades for Cards & Secondary Elements
         sage: {
@@ -54,27 +54,32 @@ export default {
         },
         ice: {
           50: '#F8FAFC',
-          100: '#F0F5FA',
+          100: '#EEF4F6',
           200: '#E2ECF5',
           300: '#C8DBEE',
         },
+        muga: {
+          50: '#FBF6EA', 100: '#F5E8C7', 200: '#EBD08F', 300: '#DFB559', 400: '#D29C36',
+          500: '#C08427', 600: '#A3691F', 700: '#82501C', 800: '#6A411C', 900: '#58371A',
+        },
         // Accent: Warm Terracotta Orange (Complements GRD Red Logo & Navy)
         terracotta: {
-          50: '#FDF6F0',
-          100: '#FAECE1',
-          200: '#F5D6C2',
-          300: '#EDB597',
-          400: '#E28761',
-          500: '#C85A2E', // Primary CTA button & active indicator
-          600: '#B5481F', // Hover state
-          700: '#963717',
-          800: '#7A2D14',
-          900: '#642613',
+          50: '#ECF8F7',
+          100: '#CDEEEB',
+          200: '#9DDDD7',
+          300: '#66C5BD',
+          400: '#34A89F',
+          500: '#0E7570', // Primary CTA button & active indicator
+          600: '#0D5E5B', // Hover state
+          700: '#0E4B49',
+          800: '#0D3E3D',
+          900: '#0B3333',
         }
       },
       fontFamily: {
-        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        serif: ['"Familjen Grotesk"', '"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Familjen Grotesk"', '"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'card': '0 4px 20px -2px rgba(10, 25, 47, 0.06)',

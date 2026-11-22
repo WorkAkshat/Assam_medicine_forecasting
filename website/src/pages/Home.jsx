@@ -5,10 +5,11 @@ import {
   HygieneSection, 
   AboutSection, 
   PresenceSection,
+  ForecastSection,
   SEO 
 } from '@/components';
 
-export default function Home({ onOpenEnquiry }) {
+export default function Home({ onOpenEnquiry, onOpenPortal }) {
   return (
     <div className="flex flex-col min-h-screen">
       <SEO
@@ -17,6 +18,9 @@ export default function Home({ onOpenEnquiry }) {
       />
       {/* Hero Section with Integrated Value Highlights */}
       <Hero onOpenEnquiry={onOpenEnquiry} />
+
+      {/* Demand forecasting & replenishment (NESFIC-I-09) */}
+      <ForecastSection onOpenPortal={onOpenPortal} />
 
       {/* Pharmaceutical Formulations Portfolio Section */}
       <PharmaSection />

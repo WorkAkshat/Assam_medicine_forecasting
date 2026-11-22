@@ -24,3 +24,4 @@ export { default as PharmaSection } from './home/PharmaSection';
 export { default as HygieneSection } from './home/HygieneSection';
 export { default as AboutSection } from './home/AboutSection';
 export { default as PresenceSection } from './home/PresenceSection';
+export { default as ForecastSection } from './home/ForecastSection';

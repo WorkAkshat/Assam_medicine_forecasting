@@ -80,7 +80,8 @@ export default function PortalLoginModal({ isOpen, onClose }) {
     setIsLoading(true);
 
     const activeRole = QUICK_ROLES[selectedRoleIndex]?.roleId || 'supply-chain-manager';
-    const targetUrl = `${PORTAL_BASE_URL}/dashboard?role=${activeRole}`;
+    const landing = activeRole === 'distributor' ? 'dashboard' : 'control-tower';
+    const targetUrl = `${PORTAL_BASE_URL}/${landing}?role=${activeRole}`;
 
     setTimeout(() => {
       setIsLoading(false);
@@ -95,7 +96,7 @@ export default function PortalLoginModal({ isOpen, onClose }) {
 
   const handleDirectLaunch = () => {
     const activeRole = QUICK_ROLES[selectedRoleIndex]?.roleId || 'supply-chain-manager';
-    window.open(`${PORTAL_BASE_URL}/dashboard?role=${activeRole}`, '_blank', 'noopener,noreferrer');
+    window.open(`${PORTAL_BASE_URL}/${activeRole === 'distributor' ? 'dashboard' : 'control-tower'}?role=${activeRole}`, '_blank', 'noopener,noreferrer');
     onClose();
   };
 

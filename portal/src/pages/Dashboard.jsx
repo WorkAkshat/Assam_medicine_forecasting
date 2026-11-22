@@ -25,6 +25,7 @@ import { MOCK_IN_TRANSIT_SHIPMENTS } from '../data/mockLogistics';
 
 import { formatNumber, formatCurrency } from '../utils/formatters';
 import { Link } from 'react-router-dom';
+import { EnginePilotBanner } from '../components/engine/ui';
 import { useAuth } from '../hooks/useAuth';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { STORAGE_KEYS } from '../services/grdDataService';
@@ -203,31 +204,7 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* NESFIC-I-09 Pilot Banner - Clean Light Theme */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-50/70 via-white to-blue-50/70 text-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-200">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-terracotta-600 text-white text-[10px] font-sans font-bold">
-              NESFIC-I-09 Pilot Project
-            </span>
-            <span className="text-xs text-slate-500 font-medium">Assam Medicine Availability Network</span>
-          </div>
-          <h3 className="font-sans font-bold text-base sm:text-lg text-navy-950">
-            Pilot Week 11: Forecast Accuracy at 79.4% (+15.2% Improvement Over Baseline)
-          </h3>
-          <p className="text-xs text-slate-600 font-normal max-w-2xl leading-relaxed">
-            Live validation across Guwahati Central Depot, Rani cGMP plant, Dibrugarh, and Silchar stockists. Hospital stockouts decreased by 34.6%, ensuring critical medicines remain available for patients.
-          </p>
-        </div>
-
-        <Link
-          to="/pilot-kpis"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-terracotta-600 hover:bg-terracotta-700 text-white text-xs font-semibold shrink-0 transition-all shadow-sm"
-        >
-          <span>View 5 Pilot Goals &amp; Progress</span>
-          <ArrowUpRight className="w-4 h-4" />
-        </Link>
-      </div>
+      <EnginePilotBanner />
 
       {/* Main Charts & Reorder Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">

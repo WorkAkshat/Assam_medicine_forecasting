@@ -1,80 +1,92 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import PortalLayout from '../components/layout/PortalLayout';
 
 // Module Pages
-import Dashboard from '../pages/Dashboard';
-import PilotMonitoring from '../pages/PilotMonitoring';
-import DemandForecasting from '../pages/DemandForecasting';
-import Replenishment from '../pages/Replenishment';
-import StockoutRisk from '../pages/StockoutRisk';
-import ExcessInventory from '../pages/ExcessInventory';
-import ExpiryManagement from '../pages/ExpiryManagement';
-import Logistics from '../pages/Logistics';
-import Skus from '../pages/Skus';
-import Inventory from '../pages/Inventory';
-import Orders from '../pages/Orders';
-import Sales from '../pages/Sales';
-import Distributors from '../pages/Distributors';
-import Stockists from '../pages/Stockists';
-import Customers from '../pages/Customers';
-import Reports from '../pages/Reports';
-import Alerts from '../pages/Alerts';
-import DataImport from '../pages/DataImport';
-import Users from '../pages/Users';
-import Settings from '../pages/Settings';
+const Dashboard = lazy(() => import('../pages/Dashboard'));
+const ImpactLab = lazy(() => import('../pages/ImpactLab'));
+const ControlTower = lazy(() => import('../pages/ControlTower'));
+const ForecastStudio = lazy(() => import('../pages/ForecastStudio'));
+const ReplenishmentPlan = lazy(() => import('../pages/ReplenishmentPlan'));
+const StockoutRisk = lazy(() => import('../pages/StockoutRisk'));
+const ExcessInventory = lazy(() => import('../pages/ExcessInventory'));
+const ExpiryRadar = lazy(() => import('../pages/ExpiryRadar'));
+const Logistics = lazy(() => import('../pages/Logistics'));
+const Skus = lazy(() => import('../pages/Skus'));
+const Inventory = lazy(() => import('../pages/Inventory'));
+const Orders = lazy(() => import('../pages/Orders'));
+const Sales = lazy(() => import('../pages/Sales'));
+const Distributors = lazy(() => import('../pages/Distributors'));
+const Stockists = lazy(() => import('../pages/Stockists'));
+const Customers = lazy(() => import('../pages/Customers'));
+const Reports = lazy(() => import('../pages/Reports'));
+const Alerts = lazy(() => import('../pages/Alerts'));
+const DataImport = lazy(() => import('../pages/DataImport'));
+const Users = lazy(() => import('../pages/Users'));
+const Settings = lazy(() => import('../pages/Settings'));
 
 // Dedicated Distributor Partner Portal Pages
-import DistributorDashboard from '../pages/distributor/DistributorDashboard';
-import DistributorOrders from '../pages/distributor/DistributorOrders';
-import DistributorNewOrder from '../pages/distributor/DistributorNewOrder';
-import DistributorStockists from '../pages/distributor/DistributorStockists';
-import DistributorInventory from '../pages/distributor/DistributorInventory';
-import DistributorLedger from '../pages/distributor/DistributorLedger';
+const DistributorDashboard = lazy(() => import('../pages/distributor/DistributorDashboard'));
+const DistributorOrders = lazy(() => import('../pages/distributor/DistributorOrders'));
+const DistributorNewOrder = lazy(() => import('../pages/distributor/DistributorNewOrder'));
+const DistributorStockists = lazy(() => import('../pages/distributor/DistributorStockists'));
+const DistributorInventory = lazy(() => import('../pages/distributor/DistributorInventory'));
+const DistributorLedger = lazy(() => import('../pages/distributor/DistributorLedger'));
 
 // Dedicated Sales Director Commercial Portal Pages
-import SalesDirectorDashboard from '../pages/salesDirector/SalesDirectorDashboard';
-import SalesTerritories from '../pages/salesDirector/SalesTerritories';
-import SalesCreditApprovals from '../pages/salesDirector/SalesCreditApprovals';
-import SalesFieldForce from '../pages/salesDirector/SalesFieldForce';
-import SalesProducts from '../pages/salesDirector/SalesProducts';
+const SalesDirectorDashboard = lazy(() => import('../pages/salesDirector/SalesDirectorDashboard'));
+const SalesTerritories = lazy(() => import('../pages/salesDirector/SalesTerritories'));
+const SalesCreditApprovals = lazy(() => import('../pages/salesDirector/SalesCreditApprovals'));
+const SalesFieldForce = lazy(() => import('../pages/salesDirector/SalesFieldForce'));
+const SalesProducts = lazy(() => import('../pages/salesDirector/SalesProducts'));
 
 // Dedicated Supply Chain Manager Portal Pages (Dr. Abhijit Sarma)
-import SupplyChainDashboard from '../pages/supplyChain/SupplyChainDashboard';
-import SupplyChainApprovals from '../pages/supplyChain/SupplyChainApprovals';
-import SupplyChainInward from '../pages/supplyChain/SupplyChainInward';
-import SupplyChainColdChain from '../pages/supplyChain/SupplyChainColdChain';
-import SupplyChainTransfers from '../pages/supplyChain/SupplyChainTransfers';
+const SupplyChainDashboard = lazy(() => import('../pages/supplyChain/SupplyChainDashboard'));
+const SupplyChainApprovals = lazy(() => import('../pages/supplyChain/SupplyChainApprovals'));
+const SupplyChainInward = lazy(() => import('../pages/supplyChain/SupplyChainInward'));
+const SupplyChainColdChain = lazy(() => import('../pages/supplyChain/SupplyChainColdChain'));
+const SupplyChainTransfers = lazy(() => import('../pages/supplyChain/SupplyChainTransfers'));
 
 // Dedicated Warehouse Controller Portal Pages (Pranabesh Bora - Rani cGMP Plant)
-import WarehouseDashboard from '../pages/warehouse/WarehouseDashboard';
-import WarehouseBatches from '../pages/warehouse/WarehouseBatches';
-import WarehouseDispatch from '../pages/warehouse/WarehouseDispatch';
-import WarehouseStorage from '../pages/warehouse/WarehouseStorage';
-import WarehouseAudit from '../pages/warehouse/WarehouseAudit';
+const WarehouseDashboard = lazy(() => import('../pages/warehouse/WarehouseDashboard'));
+const WarehouseBatches = lazy(() => import('../pages/warehouse/WarehouseBatches'));
+const WarehouseDispatch = lazy(() => import('../pages/warehouse/WarehouseDispatch'));
+const WarehouseStorage = lazy(() => import('../pages/warehouse/WarehouseStorage'));
+const WarehouseAudit = lazy(() => import('../pages/warehouse/WarehouseAudit'));
 
 // Dedicated Management / Executive Portal Pages (Gautam R. Dhanuka - Corporate HQ)
-import ManagementDashboard from '../pages/management/ManagementDashboard';
-import ManagementAvailability from '../pages/management/ManagementAvailability';
-import ManagementFinancials from '../pages/management/ManagementFinancials';
-import ManagementGovernance from '../pages/management/ManagementGovernance';
-import ManagementStrategy from '../pages/management/ManagementStrategy';
+const ManagementDashboard = lazy(() => import('../pages/management/ManagementDashboard'));
+const ManagementAvailability = lazy(() => import('../pages/management/ManagementAvailability'));
+const ManagementFinancials = lazy(() => import('../pages/management/ManagementFinancials'));
+const ManagementGovernance = lazy(() => import('../pages/management/ManagementGovernance'));
+const ManagementStrategy = lazy(() => import('../pages/management/ManagementStrategy'));
+
+function PageFallback() {
+  return (
+    <div className="space-y-4" aria-busy="true">
+      <div className="h-8 w-64 rounded-md bg-mist-200 animate-pulse" />
+      <div className="h-48 rounded-lg bg-white border border-mist-300/70 animate-pulse" />
+    </div>
+  );
+}
 
 export default function AppRoutes() {
   return (
+    <Suspense fallback={<PageFallback />}>
     <Routes>
       <Route element={<PortalLayout />}>
         {/* Default redirect to Dashboard */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/control-tower" replace />} />
+        <Route path="/control-tower" element={<ControlTower />} />
 
         {/* 20 Functional Modules */}
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/pilot-kpis" element={<PilotMonitoring />} />
-        <Route path="/demand-forecasting" element={<DemandForecasting />} />
-        <Route path="/smart-replenishment" element={<Replenishment />} />
+        <Route path="/pilot-kpis" element={<ImpactLab />} />
+        <Route path="/demand-forecasting" element={<ForecastStudio />} />
+        <Route path="/smart-replenishment" element={<ReplenishmentPlan />} />
         <Route path="/stockout-risk" element={<StockoutRisk />} />
         <Route path="/excess-inventory" element={<ExcessInventory />} />
-        <Route path="/expiry-management" element={<ExpiryManagement />} />
+        <Route path="/expiry-management" element={<ExpiryRadar />} />
         <Route path="/logistics-monitoring" element={<Logistics />} />
         <Route path="/skus" element={<Skus />} />
         <Route path="/inventory" element={<Inventory />} />
@@ -129,5 +141,6 @@ export default function AppRoutes() {
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
+    </Suspense>
   );
 }
